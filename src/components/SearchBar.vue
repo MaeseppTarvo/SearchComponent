@@ -1,47 +1,43 @@
 <template>
     <div class="searchBarMain">
-      <input type="text" name="header-search" value="" id="searchBarInput" :placeholder="searchbar_placeholder" v-model="search">
-	  {{search}}
+      <input id="searchBarInput" type="text" :placeholder="searchbar_placeholder" :value="msg" @input="searchChanged">
     </div>
 </template>
 
-<script lang="coffee" type="text/coffeescript">
+<script>
 export default {
-
 	props: {
 		searchbar_placeholder: {
-			type: String
+			type: String,
 			default: 'Otsi kasutajat...'
-		}
-		search: ''
-	}
+		},
+		msg: ''
 
+	},
+
+	data() {
+		return {
+			user_input: 'tere'
+		}
+	},
+
+	methods: {
+		searchChanged(event) {
+			this.user_input = event.target.value;
+			this.$emit('searchChanged', this.user_input)
+		}
+	}
 
 }
 </script>
 
-<style>
+<style scoped>
 .searchBarMain {
 	background: #fff;
 	width: 100%;
-	max-width: 680px;
 	margin: 0 auto;
 	height: 42px;
-	-webkit-transition: all 0.2s ease-in-out;
-	-moz-transition: all 0.2s ease-in-out;
-	-ms-transition: all 0.2s ease-in-out;
-	-o-transition: all 0.2s ease-in-out;
-	transition: all 0.2s ease-in-out;
 	
-}
-
-.searchBarMain i.searchBarSearchIcon {
-	height: 100%;
-	line-height: 42px;
-	float: left;
-	width: 52px;
-	text-align: center;
-	color: rgba(68, 68, 68, 0.5);
 }
 
 .searchBarMain input#searchBarInput {
@@ -56,6 +52,11 @@ export default {
 	font-weight: 400;
 	font-family: 'Roboto', sans-serif;
 	padding: 0% 16% 0% 16px;
+	border-bottom: solid .1rem #E0E0E0;
+}
+
+.searchBarMain input#searchBarInput:focus {
+    border-bottom: 1px solid blue;
 }
 
 </style>

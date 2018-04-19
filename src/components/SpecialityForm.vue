@@ -1,16 +1,17 @@
 <template>
     <div class="list">
-  <div class="list-title">
+  <div v-if="header_enabled" class="list-header">
     {{title}}
     <i class="material-icons list-close-icon">clear</i>
   </div>
   <div class="list-item-container">
-      <search-bar></search-bar>
+      <search-bar :msg="user_input" @searchChanged="user_input = $event"></search-bar>
+      
       <div class='list-item' v-for="(item, index) in filtered_items" :key="item.name" @click="test(index)">
           <div class="list-item-selection" style="float: right;">
-            <input id="item.id" name="list-checkbox" type="checkbox"  v-model="item.id">
+            <input id="item.id" name="list-checkbox" type="checkbox"  v-model="item.id" ref="ticker">
         </div>
-        <div class="list-item-icon"></div>
+        <avatar></avatar>
         <div class="list-item-text">
           {{ item.name }}
         </div>
@@ -22,37 +23,52 @@
 
 <script lang="coffee" type="text/coffeescript">
 import SearchBar from './SearchBar'
+import Avatar from './Avatar'
 export default {
     props: {
         title: {
             type: String
             default: 'Määra kasutaja...'
+        },
+        header_enabled: {
+            type: Boolean,
+            default: true
         }
     }
     components: {
-        SearchBar
+        SearchBar,
+        Avatar
     }
     data: ->
-        search: 'Tarvo'
+        user_input: ''
         is_checked: false
         items: [{avatar: '', name: 'Tarvo'}, {avatar: '', name: 'Lennart'}]
-        
+        selected_items: []
 
     methods: {
         test: (index) ->
-            console.log index
+            if this.user_input.length >= 1
+                if @.$refs.ticker[index].checked == true
+                    @.$refs.ticker[index].checked = false
+                else
+                    @.$refs.ticker[index].checked = true
+            else
+                if @.$refs.ticker[index].checked == true
+                    @.$refs.ticker[index].checked = false
+                else
+                    @.$refs.ticker[index].checked = true
     }
 
     computed: {
         filtered_items: ->
             self = this
-            @items.filter (cust) ->
-                cust.name.toLowerCase().indexOf(self.search.toLowerCase()) >= 0
+            @items.filter (item) ->
+                item.name.toLowerCase().indexOf(self.user_input.toLowerCase()) >= 0
     }
 }
 </script>
 
-<style>
+<style scoped>
 /* -- import Roboto Font ------------------------------ */
 @import "https://fonts.googleapis.com/css?family=Roboto:400,100,100italic,300,300italic,400italic,500,500italic,700,700italic,900,900italic&subset=latin,cyrillic";
 
@@ -77,25 +93,32 @@ a:visited {
 }
 
 .list{
-  box-shadow: 0 1px 3px 0 rgba(0,0,0,.3);
+  box-shadow: 0 6px 16px 0 rgba(0,0,0,.26), 0 -1px 0 0 rgba(224,224,224,.5), 0 0 2px 0 rgba(0,0,0,.12), 0 2px 4px 0 rgba(0,0,0,.24);
   width: 260px;
   margin: 0 auto;
   background:white;
 }
 
-.list-title {
-  background-color: #5677fc;
+.list-header {
+  background-color: #FFF;
+  border-bottom: solid .1rem #E0E0E0;
   padding:16px 16px;
-  color: white;
+  color: #202020;
   font-size: 20px;
 }
 
-.list-title i.list-close-icon {
+.list-header i.list-close-icon {
 	margin-left: 20%;
+    color: #9E9E9E;
+    font-size: 1.6rem;
 }
 
-.list-title i.list-close-icon:hover {
+.list-header i.list-close-icon:hover {
 	cursor: pointer;
+}
+
+.list-item:hover {
+    cursor: pointer;
 }
 
 .list-item-container {
